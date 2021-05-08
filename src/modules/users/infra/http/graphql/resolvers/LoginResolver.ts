@@ -2,7 +2,7 @@ import { Query, Resolver, Arg, Ctx } from 'type-graphql';
 import { compare } from 'bcryptjs';
 import fetch from 'isomorphic-unfetch';
 
-import { Context } from '@shared/infra/http/graphql/context';
+import prisma from '@shared/infra/database/prisma';
 
 import LoginScalar from '../scalars/LoginScalar';
 import LoginInput from '../inputs/LoginInput';
@@ -11,10 +11,9 @@ import LoginInput from '../inputs/LoginInput';
 export default class LoginResolver {
   @Query(() => LoginScalar)
   async login(
-    @Arg('data') { email, password }: LoginInput,
-    @Ctx() ctx: Context
+    @Arg('data') { email, password }: LoginInput
   ): Promise<LoginScalar> {
-    const user = await ctx.prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
       throw new Error('Usuário não encontrado.');
